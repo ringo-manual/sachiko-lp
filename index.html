@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code 全自動マネタイズシステム｜幸子</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #F27935;
+    --orange-dark: #D4611C;
+    --cream: #FFF8F0;
+    --cream-dark: #FFF0E0;
+    --dark: #2D1A0E;
+    --text: #3D2210;
+    --text-light: #8B7355;
+    --white: #FFFFFF;
+    --border: #F0DCC8;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    line-height: 2;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .sec { padding: 64px 20px; text-align: center; }
+  .sec-white { background: var(--white); }
+  .sec-cream { background: var(--cream); }
+  .sec-cream-dark { background: var(--cream-dark); }
+  .inner { max-width: 520px; margin: 0 auto; }
+
+  .t-hero {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 32px; font-weight: 900; line-height: 1.6;
+    margin-bottom: 24px;
+  }
+  .t-xl {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 26px; font-weight: 700; line-height: 1.6;
+    margin-bottom: 20px;
+  }
+  .t-lg { font-size: 20px; font-weight: 700; line-height: 1.7; margin-bottom: 16px; }
+  .t-md { font-size: 17px; font-weight: 700; line-height: 1.8; margin-bottom: 12px; }
+  .t-body { font-size: 15px; line-height: 2.2; margin-bottom: 24px; text-align: center; }
+  .t-sm { font-size: 13px; color: var(--text-light); line-height: 1.8; }
+  .t-center { text-align: center; }
+  .t-orange { color: var(--orange); }
+  .t-bold { font-weight: 700; }
+  .t-big { font-size: 20px; }
+
+  .heading-box {
+    border-top: 3px solid var(--orange);
+    border-bottom: 3px solid var(--orange);
+    padding: 20px 16px;
+    margin-bottom: 28px;
+    display: inline-block;
+  }
+  .heading-box .t-xl { margin-bottom: 0; }
+
+  .pill {
+    display: inline-block;
+    font-size: 11px; font-weight: 700;
+    color: var(--orange); letter-spacing: 0.2em;
+    padding: 4px 20px;
+    border: 1px solid var(--orange);
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+
+  .urgency {
+    background: linear-gradient(90deg, #C2410C, #E05320);
+    color: white; text-align: center;
+    padding: 14px 16px; font-size: 13px; font-weight: 700;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(194,65,12,0.3);
+  }
+
+  .quote {
+    border-left: 4px solid var(--orange);
+    padding: 24px 24px;
+    background: var(--white);
+    margin: 28px 0;
+    border-radius: 0 8px 8px 0;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(242,121,53,0.08);
+  }
+
+  .card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 28px 24px;
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  }
+  .card-highlight {
+    background: var(--cream-dark);
+    border-left: 4px solid var(--orange);
+    padding: 24px;
+    margin: 28px 0;
+    border-radius: 0 8px 8px 0;
+    text-align: center;
+    font-size: 15px; line-height: 2.2;
+  }
+
+  .reason {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 24px;
+    margin-bottom: 24px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+  .reason-num {
+    display: inline-block;
+    background: var(--orange); color: white;
+    font-weight: 900; font-size: 12px;
+    padding: 4px 14px; border-radius: 20px;
+    margin-bottom: 12px;
+  }
+  .reason h3 { font-size: 17px; font-weight: 900; margin-bottom: 10px; }
+  .reason p { font-size: 14px; line-height: 2; }
+
+  .scene {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 28px 24px;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--orange);
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+  .scene.fear { border-left-color: #C2410C; background: #FFFAF5; }
+  .scene-label { color: var(--orange-dark); font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+  .scene p { font-size: 15px; line-height: 2.2; }
+
+  .step {
+    display: flex; gap: 16px; align-items: flex-start;
+    margin-bottom: 24px; text-align: left;
+  }
+  .step-num {
+    background: var(--orange); color: white;
+    font-weight: 900; font-size: 14px;
+    min-width: 44px; height: 44px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .step-body h3 { font-size: 16px; font-weight: 900; margin-bottom: 4px; }
+  .step-body p { font-size: 14px; line-height: 1.9; color: var(--text); }
+
+  .bonus-list {
+    background: var(--white);
+    border: 2px solid var(--orange);
+    border-radius: 12px;
+    padding: 28px 24px;
+    margin-top: 24px;
+  }
+  .bonus-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px;
+    background: var(--cream);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-size: 14px; font-weight: 700;
+  }
+  .bonus-item:last-child { margin-bottom: 0; }
+  .bonus-num {
+    background: var(--orange); color: white;
+    font-weight: 900; font-size: 12px;
+    min-width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .voice-bubble {
+    background: #FFF9F0;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+  .voice-bubble.doubt { border-left: 3px solid #C2410C; }
+  .voice-tag {
+    display: inline-block;
+    font-size: 11px; font-weight: 700;
+    color: var(--orange);
+    background: var(--cream-dark);
+    padding: 2px 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+  }
+  .voice-bubble.doubt .voice-tag { color: #C2410C; }
+  .voice-bubble p { font-size: 14px; line-height: 2; }
+  .voice-meta { font-size: 12px; color: var(--text-light); margin-top: 10px; }
+
+  .cta-area { padding: 52px 20px; text-align: center; }
+  .cta-btn {
+    display: block;
+    background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+    color: white; text-align: center;
+    padding: 22px 20px; border-radius: 12px;
+    font-size: 19px; font-weight: 900;
+    text-decoration: none; line-height: 1.5;
+    max-width: 480px; margin: 0 auto;
+    box-shadow: 0 8px 28px rgba(242,121,53,0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative; overflow: hidden;
+  }
+  .cta-btn::before {
+    content:''; position:absolute; top:0; left:-100%;
+    width:100%; height:100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    animation: shimmer 2.5s infinite;
+  }
+  @keyframes shimmer { 100% { left:100%; } }
+  .cta-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 36px rgba(242,121,53,0.5); }
+  .cta-sub { font-size: 13px; font-weight: 500; opacity: 0.9; margin-top: 4px; }
+  .cta-note { font-size: 12px; color: var(--text-light); margin-top: 10px; }
+
+  .price-box {
+    background: var(--cream);
+    border: 2px solid var(--orange);
+    border-radius: 16px;
+    padding: 36px 24px;
+    text-align: center;
+    margin: 28px 0;
+    position: relative;
+  }
+  .price-box::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:4px;
+    background: linear-gradient(90deg, var(--orange), var(--orange-dark), var(--orange));
+    border-radius: 16px 16px 0 0;
+  }
+  .price-amount {
+    font-size: 56px; font-weight: 900; color: var(--orange); line-height: 1;
+    margin: 12px 0 8px;
+  }
+
+  .compare-table {
+    width:100%; border-collapse:separate; border-spacing:0;
+    margin-bottom:24px; font-size:13px; border-radius:12px;
+    overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.04);
+  }
+  .compare-table th,.compare-table td {
+    padding:12px 12px; border-bottom:1px solid var(--border); text-align:center;
+  }
+  .compare-table th { background:var(--cream-dark); font-size:12px; font-weight:700; }
+  .compare-table td { background:var(--white); }
+  .compare-table .hl { background:rgba(242,121,53,0.08); font-weight:900; color:var(--orange-dark); }
+
+  .cond-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:20px; }
+  @media(max-width:480px) { .cond-grid { grid-template-columns:1fr; } }
+  .cond-card { border-radius:12px; padding:20px 18px; font-size:14px; line-height:1.9; text-align:center; }
+  .cond-ok { background:#F0FFF4; border:1px solid #86EFAC; }
+  .cond-ok h3 { color:#15803D; font-size:14px; font-weight:900; margin-bottom:10px; }
+  .cond-ng { background:#FFF7ED; border:1px solid #FED7AA; }
+  .cond-ng h3 { color:#C2410C; font-size:14px; font-weight:900; margin-bottom:10px; }
+  .cond-list { list-style:none; }
+  .cond-list li { padding:5px 0; border-bottom:1px solid rgba(0,0,0,0.04); font-size:13px; }
+  .cond-list li:last-child { border-bottom:none; }
+
+  .qa-item { margin-bottom:20px; text-align:center; }
+  .qa-q {
+    background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+    color:white; padding:18px 24px;
+    border-radius:12px 12px 0 0;
+    font-weight:700; font-size:15px; text-align:center;
+  }
+  .qa-a {
+    background:var(--white); padding:20px 24px;
+    border-radius:0 0 12px 12px;
+    border:1px solid var(--border); border-top:none;
+    font-size:15px; line-height:2.1; text-align:center;
+  }
+
+  .backend {
+    background:var(--white); border:2px dashed var(--orange);
+    border-radius:12px; padding:28px 24px; margin-top:28px;
+  }
+
+  .ps { background:var(--cream-dark); padding:32px 20px; }
+  .ps-inner { max-width:520px; margin:0 auto; font-size:14px; line-height:2.2; text-align:left; }
+
+  .fade-in { opacity:0; transform:translateY(24px); transition:opacity 0.7s ease, transform 0.7s ease; }
+  .fade-in.visible { opacity:1; transform:none; }
+
+  .sec-white + .sec-cream,
+  .sec-cream + .sec-white,
+  .sec-cream + .sec-cream-dark,
+  .sec-cream-dark + .sec-white {
+    border-top: 1px solid rgba(242,121,53,0.12);
+  }
+
+  .pill + .t-xl { margin-top: 8px; }
+
+  @media(max-width:600px) {
+    .sec { padding:40px 18px; }
+    .t-hero { font-size:26px; }
+    .t-xl { font-size:22px; }
+    .t-lg { font-size:18px; }
+    .t-body { font-size:14px; }
+    .price-amount { font-size:44px; }
+    .cta-btn { font-size:17px; padding:20px 18px; }
+    .compare-table { font-size:12px; }
+    .compare-table th,.compare-table td { padding:10px 8px; }
+  }
+  @media(min-width:768px) {
+    .inner { max-width:520px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="urgency">サポート品質維持のため<strong>3名</strong>で締め切り｜4人目以降は次回募集をお待ちください</div>
+
+<!-- ====== HERO ====== -->
+<div class="sec sec-cream">
+  <div class="inner">
+    <p class="t-hero">
+      71歳の私が<br>
+      <span class="t-orange">年金を超える収入</span>を<br>
+      毎月つくれている理由
+    </p>
+    <p class="t-center" style="margin-top:16px;font-size:17px;line-height:2">
+      投資で1800万円を失い、パニック障害になった私が<br>
+      AIに日本語で話しかけるだけで<br>
+      毎月年金を超える収入を得ている方法。
+    </p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:28px">
+      <span style="background:white;border:1px solid var(--orange);padding:10px 16px;border-radius:6px;font-size:13px;font-weight:700">プログラミング <strong class="t-orange">不要</strong></span>
+      <span style="background:white;border:1px solid var(--orange);padding:10px 16px;border-radius:6px;font-size:13px;font-weight:700">設定 <strong class="t-orange">約2時間</strong></span>
+      <span style="background:white;border:1px solid var(--orange);padding:10px 16px;border-radius:6px;font-size:13px;font-weight:700">月額 <strong class="t-orange">約3,000円</strong>だけ</span>
+      <span style="background:white;border:1px solid var(--orange);padding:10px 16px;border-radius:6px;font-size:13px;font-weight:700">1日 <strong class="t-orange">1時間</strong>の作業</span>
+    </div>
+  </div>
+</div>
+
+<!-- CTA HERO直後 -->
+<div class="cta-area sec-cream" style="padding-top:0">
+  <a href="https://buy.stripe.com/5kQ9AU4ui2eFgZna77dMI0w?client_reference_id=sachiko" class="cta-btn">年金を超える仕組みを手に入れる →<div class="cta-sub">決済完了した瞬間にシステム一式が届きます</div></a>
+  <p class="cta-note">クレジットカード対応</p>
+</div>
+
+<!-- ====== ENEMY ====== -->
+<div class="sec sec-white fade-in">
+  <div class="inner">
+    <div class="heading-box">
+      <p class="t-xl" style="margin:0;font-size:28px">老後が苦しいのは、<br><span class="t-orange">年金が少ないからじゃない。</span><br>正しい増やし方を<br>誰も教えなかったからだ。</p>
+    </div>
+    <p class="t-body">退職金を投資に回した。「プロに任せれば安心」と言われて。結果、1800万円が消えた。</p>
+    <p class="t-body">銀行の窓口で勧められた投資信託。友人に誘われたセミナー。テレビで見た「老後2000万円問題」に焦って手を出した資産運用。</p>
+    <p class="t-body">全部、「正しいやり方」だと信じていたものでした。</p>
+    <div class="quote">
+      <p class="t-body" style="margin:0">努力の方向が間違っていれば、どれだけお金を注ぎ込んでもなくなるだけ。<br><br><strong class="t-orange">問題は年齢でもなければ、年金の額でもない。<br>渡された情報が、最初から間違っていたんです。</strong></p>
+    </div>
+  </div>
+</div>
+
+<!-- ====== STORY ====== -->
+<div class="sec sec-cream fade-in">
+  <div class="inner">
+    <span class="pill">STORY</span>
+    <p class="t-xl">1800万円を失い、<br>パニック障害になった私が<br><span class="t-orange">なぜ今これを語れるのか。</span></p>
+    <div style="margin-bottom:24px">
+      <img src="icon.png" alt="幸子" style="width:80px;height:80px;border-radius:50%">
+      <p class="t-md" style="margin-top:8px;margin-bottom:2px">幸子</p>
+      <p class="t-sm">71歳・主婦</p>
+    </div>
+    <div class="card">
+      <p class="t-body">65歳で夫を亡くしました。残された退職金と貯金、合わせて約3000万円。これがあれば大丈夫だと思っていました。</p>
+      <p class="t-body">銀行の窓口で「資産運用しませんか」と勧められ、投資信託と外貨建て保険に手を出しました。「プロが運用するから安心ですよ」と言われて。</p>
+      <p class="t-body">結果、1800万円が消えました。リーマンショック級の暴落が来たとき、損切りのタイミングすらわからなかった。銀行の担当者は異動でいなくなっていました。</p>
+      <div class="card-highlight">残高を見たとき、体が動かなくなりました。息ができない。心臓がバクバクする。病院に行ったら「パニック障害」と診断されました。70歳を過ぎてから、布団の中で天井を見つめるだけの毎日。娘に電話する気力すらなかった。</div>
+      <p class="t-body">変わったのは、孫がスマホを見せてくれたのがきっかけでした。「おばあちゃん、このAIってすごいよ」。Claude Codeというものでした。パソコンに日本語で話しかけるだけで、記事もSNS投稿も販売ページも、全部作ってくれる。</p>
+      <p class="t-body" style="margin:0">孫に手伝ってもらって設定した翌朝。スマホに通知が来ました。Stripeから「決済完了」。<strong class="t-orange">何もしていないのに、寝ている間に売れていた。</strong>手が震えました。71歳の私にも、まだできることがあったんだと。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ====== WHY ====== -->
+<div class="sec sec-white fade-in">
+  <div class="inner">
+    <span class="pill">WHY</span>
+    <p class="t-xl"><span class="t-orange">なぜ、今まで</span><br>うまくいかなかったのか</p>
+    <div class="reason"><div class="reason-num">原因 1</div><h3>「年齢的に無理」と思い込まされていた</h3><p>70代だからできない。パソコンが苦手だからできない。そう思っていませんか？ 違います。日本語が話せれば、AIが全部やってくれる時代になったんです。</p></div>
+    <div class="reason"><div class="reason-num">原因 2</div><h3>「お金を増やす＝投資」しか知らなかった</h3><p>銀行もテレビも「投資しましょう」としか言わない。でも投資はプロでも負ける。自分の知識や経験を「商品」にして売る方法があることを、誰も教えてくれなかった。</p></div>
+    <div class="reason"><div class="reason-num">原因 3</div><h3>「仕組み」を作る方法を知らなかった</h3><p>寝ている間にも収入が生まれる仕組み。それは若い人だけの特権じゃない。AIが面倒な作業を全部やってくれる今、71歳の私でも仕組みを持てる時代になりました。</p></div>
+    <p class="t-lg t-orange" style="margin-top:12px">この3つの壁を、<br>全部まとめて壊すのが<br>このシステムです。</p>
+  </div>
+</div>
+
+<!-- ====== FEAR ====== -->
+<div class="sec sec-cream-dark fade-in">
+  <div class="inner">
+    <span class="pill">WARNING</span>
+    <p class="t-xl">ここで少し、<br><span class="t-orange">想像してみてください。</span></p>
+    <div class="scene fear"><div class="scene-label">このページを閉じた、3年後</div><p>年金の振込日だけを待つ生活。スーパーで値段を見ながらカゴに入れて、レジで合計額にため息をつく。光熱費は上がり続け、医療費も増えていく。娘に「お金、大丈夫？」と聞かれるたびに、「大丈夫よ」と嘘をつく。</p></div>
+    <div class="scene fear"><div class="scene-label">AIを使わなかった人の現実</div><p>2026年、AIを活用して仕組みを作った人と、知らなかった人の差は、もう取り返しがつかないレベルで広がっています。年齢は関係ありません。知っているか、知らないか。それだけの差です。</p></div>
+  </div>
+</div>
+
+<!-- ====== BENEFIT ====== -->
+<div class="sec sec-white fade-in">
+  <div class="inner">
+    <span class="pill">FUTURE</span>
+    <p class="t-xl">逆に、<span class="t-orange">動いた人の日常</span>は<br>こう変わります。</p>
+    <div class="scene"><p>朝起きて、スマホを見る。Stripeから「決済完了」の通知。昨日、パソコンに30分だけ話しかけただけ。それだけで、寝ている間に売れていた。今日はゆっくりお茶でも飲もうかな。</p></div>
+    <div class="scene"><p>孫の誕生日。「おばあちゃん、これ欲しい」と指さしたゲームを、値段を見ずにカゴに入れた。以前の私には考えられなかったこと。孫の笑顔を見たとき、AIを始めて本当によかったと思った。</p></div>
+    <div class="scene"><p>娘に「お母さん、最近なんか余裕あるね」と言われた。正直に話したら目を丸くして「え、すごい」と。あの顔は一生忘れない。もう「大丈夫よ」と嘘をつかなくていい。</p></div>
+    <div class="scene"><p>来月、温泉旅行を予約した。年金だけで切り詰めていた頃には想像もできなかったこと。70代から、人生は取り戻せる。</p></div>
+  </div>
+</div>
+
+<!-- ====== SYSTEM ====== -->
+<div class="sec sec-cream fade-in">
+  <div class="inner">
+    <span class="pill">SYSTEM</span>
+    <p class="t-xl">パソコンに話しかけるだけで<br><span class="t-orange">6つが全自動で動き続ける</span></p>
+    <div class="step"><div class="step-num">01</div><div class="step-body"><h3>商品設計アシスタント</h3><p>「何を売ればいいかわからない」でも大丈夫。<br>これまでの人生経験から売れる商品を一緒に設計します。</p></div></div>
+    <div class="step"><div class="step-num">02</div><div class="step-body"><h3>5プラットフォーム競合分析</h3><p>note・アメブロ・YouTube・Threads・Xの売れ筋を自動分析。<br>「なぜ売れているか」まで解明します。</p></div></div>
+    <div class="step"><div class="step-num">03</div><div class="step-body"><h3>記事＆投稿の自動生成</h3><p>リサーチ結果をもとにnote記事・Threads投稿・アメブロ記事を<br>AIが自動生成。</p></div></div>
+    <div class="step"><div class="step-num">04</div><div class="step-body"><h3>3プラットフォーム全自動投稿</h3><p>note・Threads・アメブロに自動投稿。集客導線が自動で構築されます。</p></div></div>
+    <div class="step"><div class="step-num">05</div><div class="step-body"><h3>LP自動作成</h3><p>売れる構成の販売ページをAIが丸ごと生成。<br>このページ自体もシステムで作っています。</p></div></div>
+    <div class="step"><div class="step-num">06</div><div class="step-body"><h3>Stripe決済で自動販売</h3><p>集めて→見せて→売る。このサイクルが寝ている間も回り続けます。</p></div></div>
+    <div class="bonus-list">
+      <p class="t-lg t-orange t-center" style="margin-bottom:16px">購入者限定 3つの特典</p>
+      <div class="bonus-item"><span class="bonus-num">1</span>Stripe決済セットアップ完全手順書</div>
+      <div class="bonus-item"><span class="bonus-num">2</span>5分クイックスタートガイド</div>
+      <div class="bonus-item"><span class="bonus-num">3</span>トラブルシューティング集</div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== VOICE ====== -->
+<div class="sec sec-white fade-in">
+  <div class="inner">
+    <span class="pill">VOICE</span>
+    <p class="t-xl"><span class="t-orange">実際に始めた方</span>たちの声</p>
+    <div class="voice-bubble doubt">
+      <span class="voice-tag">最初は正直、疑っていた方</span>
+      <p>「71歳のおばあちゃんにできるわけないでしょ、と思いました。過去に投資で200万円騙されたこともあるので。でもこれは投資じゃない。自分の経験が商品になる。1週間で最初の売上が出たとき、涙が出ました。」</p>
+      <div class="voice-meta">68歳・専業主婦｜投資で騙された経験あり→1週間で初売上</div>
+    </div>
+    <div class="voice-bubble">
+      <span class="voice-tag">パソコンがほぼ使えなかった方</span>
+      <p>「メールとネット検索くらいしかできない私でも、ガイド通りにやったら2時間で終わりました。日本語で話しかけるだけなので、難しいことは何もなかったです。孫に自慢しました。」</p>
+      <div class="voice-meta">71歳・専業主婦｜PC操作ほぼ未経験から2時間で完了</div>
+    </div>
+    <div class="voice-bubble">
+      <span class="voice-tag">年金だけでは不安だった方</span>
+      <p>「年金月11万円で毎月ギリギリでした。このシステムで、40年間の経理経験をnote記事にしたら、初月で3万円。今は毎月安定して年金を超えています。もっと早く知りたかった。」</p>
+      <div class="voice-meta">74歳・元経理職｜年金+αで生活に余裕が生まれた</div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-area sec-cream">
+  <a href="https://buy.stripe.com/5kQ9AU4ui2eFgZna77dMI0w?client_reference_id=sachiko" class="cta-btn">年金を超える仕組みを手に入れる →<div class="cta-sub">決済完了した瞬間にシステム一式が届きます</div></a>
+  <p class="cta-note">クレジットカード対応</p>
+</div>
+
+<!-- ====== PRICE ====== -->
+<div class="sec sec-white fade-in">
+  <div class="inner">
+    <span class="pill">PRICE</span>
+    <p class="t-xl">このシステムと同じことを<br><span class="t-orange">外注したらいくら？</span></p>
+    <p class="t-sm t-center" style="margin-bottom:20px">※ 2026年時点の実勢価格を調査して算出</p>
+    <table class="compare-table">
+      <tr><th style="text-align:left">内容</th><th>外注の実勢価格</th></tr>
+      <tr><td style="text-align:left">商品設計コンサル</td><td>40万〜200万円</td></tr>
+      <tr><td style="text-align:left">LP制作</td><td>10万〜40万円</td></tr>
+      <tr><td style="text-align:left">SNS運用代行（3媒体）</td><td>年60万〜360万円</td></tr>
+      <tr><td style="text-align:left">セールスライティング</td><td>1本5万〜20万円</td></tr>
+      <tr><td style="text-align:left">競合リサーチ</td><td>10万〜50万円</td></tr>
+    </table>
+    <p class="t-sm t-center" style="margin-bottom:8px">合計：<strong>最低でも70万円以上</strong></p>
+    <div style="background:var(--white);border-radius:12px;padding:24px 20px;margin:24px 0;text-align:center;line-height:2.2">
+      <p class="t-body">正直、この価格は赤字覚悟です。</p>
+      <p class="t-body">私自身、投資で1800万円を失いました。<br>お金がなくなる怖さは、誰よりも知っています。</p>
+      <p class="t-body">だからこそ、同じように老後のお金に不安を抱えている方が<br>手を伸ばせる金額にしました。</p>
+      <p class="t-body t-bold">年金のひと月分以下で、<br>年金を超える仕組みが手に入ります。</p>
+    </div>
+    <div class="price-box">
+      <p class="t-sm">Claude Code 全自動マネタイズシステム</p>
+      <div class="price-amount">¥39,800</div>
+      <p class="t-sm">（税込・一括・追加費用なし）</p>
+      <p class="t-orange t-bold" style="margin-top:10px;font-size:13px">サポート品質維持のため3名で締め切り</p>
+    </div>
+    <a href="https://buy.stripe.com/5kQ9AU4ui2eFgZna77dMI0w?client_reference_id=sachiko" class="cta-btn">今すぐ申し込む →<div class="cta-sub">決済完了後すぐにシステム一式をお届けします</div></a>
+    <p class="cta-note">クレジットカード対応</p>
+  </div>
+</div>
+
+<!-- CONDITIONS -->
+<div class="sec sec-cream fade-in">
+  <div class="inner">
+    <p class="t-xl">必要なものと<br><span class="t-orange">向いている方・向いていない方</span></p>
+    <div style="background:var(--white);border-radius:12px;padding:20px;margin-bottom:20px;border-left:4px solid var(--orange);text-align:center">
+      <p class="t-bold" style="margin-bottom:8px;font-size:14px">動作環境</p>
+      <p class="t-sm" style="line-height:2">✓ Windows PC（メモリ16GB以上）<br>✓ Claude Proプラン（月約3,000円）<br><span style="font-size:12px;color:#888">※より大きな売上を目指す方はMAXプラン推奨。月5万円程度ならProプランで十分です。</span><br>✓ Stripeアカウント（無料）<br>✓ プログラミング知識：<strong>一切不要</strong></p>
+    </div>
+    <div class="cond-grid">
+      <div class="cond-card cond-ok"><h3>こんな方に届けたい</h3><ul class="cond-list"><li>年金だけでは不安を感じている</li><li>投資以外の増やし方を探している</li><li>自分の人生経験を活かしたい</li><li>年齢を理由に諦めたくない</li><li>家族に迷惑をかけたくない</li></ul></div>
+      <div class="cond-card cond-ng"><h3>お力になれない方</h3><ul class="cond-list"><li>ボタン1つで稼げると思っている</li><li>初期設定の2時間すら出せない</li><li>PCを持っていない方</li><li>「どうせ無理」と決めつけている方</li><li>行動より不安を数える方が好きな方</li></ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- Q&A -->
+<div class="sec sec-white fade-in">
+  <div class="inner">
+    <span class="pill">Q&amp;A</span>
+    <p class="t-xl" style="margin-bottom:24px">よくある質問</p>
+    <div class="qa-item"><div class="qa-q">Q. 70代でもできますか？</div><div class="qa-a">A. はい。幸子自身が71歳で始めました。日本語で話しかけるだけなので、メールが打てれば大丈夫です。パソコン初心者の方でも2時間でセットアップを完了しています。</div></div>
+    <div class="qa-item"><div class="qa-q">Q. プログラミングは必要ですか？</div><div class="qa-a">A. 一切不要です。日本語で「記事を書いて」「投稿して」と話しかけるだけ。<br>コードを書く場面は一度もありません。</div></div>
+    <div class="qa-item"><div class="qa-q">Q. 39,800円は高くないですか？</div><div class="qa-a">A. 同じことを外注すると最低でも70万円以上。このシステムは<br>一括39,800円で、月額費用はClaude Pro（約3,000円）だけです。<br>年金のひと月分以下で、年金を超える仕組みが手に入ります。</div></div>
+    <div class="qa-item"><div class="qa-q">Q. 投資のようなリスクはありますか？</div><div class="qa-a">A. ありません。投資と違い、元本が減ることはありません。39,800円のシステム代と月約3,000円のAI利用料だけ。株のように値動きを見張る必要もありません。</div></div>
+    <div class="qa-item"><div class="qa-q">Q. 売る商品がないんですが…</div><div class="qa-a">A. このシステムの最初の機能が「商品設計」です。70年間の人生経験の中に、必ず誰かがお金を払ってでも知りたい知識があります。AIがヒアリングして見つけてくれます。</div></div>
+    <div class="qa-item"><div class="qa-q">Q. スマホだけではできませんか？</div><div class="qa-a">A. できません。PCでの操作が必須です。お子さんやお孫さんに相談して、中古PCを用意するところから始めてください。Windows PCでメモリ16GB以上が必要です。</div></div>
+    <div class="qa-item"><div class="qa-q">Q. 家族に内緒でできますか？</div><div class="qa-a">A. はい。自宅のパソコンで1日30分〜1時間の作業です。特別な場所も、特別な道具も必要ありません。むしろ、成果が出たときに家族に話すのが一番の楽しみになります。</div></div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-area sec-cream">
+  <a href="https://buy.stripe.com/5kQ9AU4ui2eFgZna77dMI0w?client_reference_id=sachiko" class="cta-btn">不安が消えたなら、今すぐ始める →<div class="cta-sub">39,800円｜決済完了後すぐにお届け</div></a>
+</div>
+
+<!-- FUTURE BAD → CTA -->
+<div class="sec sec-white fade-in">
+  <div class="inner">
+    <p class="t-xl">このページを閉じて、<br>また<span class="t-orange">「今度でいいか」</span>と<br>思った方へ。</p>
+    <p class="t-body t-center">3年前も同じことを思いませんでしたか？</p>
+    <p class="t-body t-center">その「今度」は来ましたか？</p>
+    <p class="t-body t-center">物価だけが上がり続けて、年金の価値は目減りしていく。光熱費も医療費も上がっていく。3年後、同じ不安を抱えていたくないなら。</p>
+    <p class="t-body t-center t-bold">39,800円を「高い」と感じる今の状況を、変えたくてここにいるんじゃないですか？</p>
+    <div style="margin-top:28px">
+      <a href="https://buy.stripe.com/5kQ9AU4ui2eFgZna77dMI0w?client_reference_id=sachiko" class="cta-btn">今すぐ動く →<div class="cta-sub">Claude Code 全自動マネタイズシステム｜39,800円</div></a>
+    </div>
+  </div>
+</div>
+
+<!-- CLOSING -->
+<div class="sec sec-cream fade-in">
+  <div class="inner">
+    <div style="max-width:680px;margin:0 auto">
+      <p class="t-xl">最後に</p>
+      <p class="t-xl t-orange">幸子から正直に話させてください。</p>
+    </div>
+    <p class="t-body t-center">私は71歳です。パソコンの専門家でもなければ、ビジネスの天才でもありません。</p>
+    <p class="t-body t-center">投資で1800万円を失って、パニック障害になって、布団から出られなくなった。普通なら、そのまま終わっていたと思います。</p>
+    <p class="t-body t-center">でも孫が見せてくれたAIのおかげで、私はもう一度立ち上がれました。今は毎月年金を超える収入があります。娘に心配をかけることもなくなりました。</p>
+    <p class="t-body t-center">同じように老後のお金に不安を抱えている方に、この方法を知ってほしい。「71歳のおばあちゃんにできたなら、私にもできるかもしれない」。そう思ってもらえたら、このページを作った意味があります。</p>
+    <p class="t-body t-center">ただし、「安いから試しに」という方には渡したくありません。39,800円を払って、本気で人生を変える覚悟がある方だけに届けたい。</p>
+    <p class="t-body t-orange t-bold" style="font-size:17px;text-align:center">申し込んでくれたら、<br>決済完了した瞬間にシステム一式が届きます。<br>1分後にはセットアップを始められます。</p>
+    <div style="margin-top:28px">
+      <a href="https://buy.stripe.com/5kQ9AU4ui2eFgZna77dMI0w?client_reference_id=sachiko" class="cta-btn">今すぐ申し込む →<div class="cta-sub">39,800円｜3名限定</div></a>
+      <p class="cta-note">定員に達した時点で受付終了</p>
+    </div>
+    <div class="backend" style="margin-top:32px">
+      <p class="t-sm" style="margin-bottom:6px">さらに上を目指したい方へ</p>
+      <p class="t-lg t-center"><span class="t-orange">幸子の個別サポート</span></p>
+      <p class="t-sm t-center">システム導入後、商品設計から販売戦略まで1対1でサポートします。</p>
+      <p class="t-sm t-center" style="margin-top:8px">※ システム購入者限定でご案内しています</p>
+    </div>
+  </div>
+</div>
+
+<!-- PS -->
+<div class="ps">
+  <div class="ps-inner">
+    <strong>追伸：</strong>70歳を過ぎてから「もう遅い」と何回思いましたか？ 投資で失敗して「もう終わりだ」と何回思いましたか？ でも、このページをここまで読んだということは、まだ諦めていないということです。71歳の私にできたこと。きっと、できます。
+  </div>
+</div>
+
+<script>
+const o = new IntersectionObserver(e => { e.forEach(el => { if(el.isIntersecting) el.target.classList.add('visible'); }); }, {threshold:0.1});
+document.querySelectorAll('.fade-in').forEach(el => o.observe(el));
+</script>
+</body>
+</html>
